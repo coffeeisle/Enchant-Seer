@@ -19,7 +19,7 @@ A Minecraft Fabric mod that reveals all enchantments in enchantment table toolti
 
 1. Install [Fabric Loader](https://fabricmc.net/use/installer/) for your Minecraft version
 2. Download and install [Fabric API](https://modrinth.com/mod/fabric-api)
-3. Download the Enchantment Preview mod from the [releases page](https://github.com/coffeeisle/enchantment-preview/releases)
+3. Download the Enchantment Preview mod from the [releases page](https://github.com/coffeeisle/enchant-seer/releases)
 4. Place the mod file in your `mods` folder
 5. Launch Minecraft with the Fabric profile
 
