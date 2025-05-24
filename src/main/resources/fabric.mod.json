@@ -1,0 +1,44 @@
+{
+    "schemaVersion": 1,
+    "id": "enchantment-preview",
+    "version": "1.0.0",
+    "name": "Enchantment Preview",
+    "description": "Shows all enchantments in enchantment table tooltips so you know exactly what you'll get!",
+    "authors": [
+      "YourName"
+    ],
+    "contact": {
+      "homepage": "https://github.com/yourusername/enchantment-preview",
+      "sources": "https://github.com/yourusername/enchantment-preview"
+    },
+    "license": "MIT",
+    "icon": "assets/enchantment-preview/icon.png",
+    "environment": "client",
+    "entrypoints": {
+      "client": [
+        "com.enchantmentpreview.EnchantmentPreviewMod"
+      ]
+    },
+    "mixins": [
+      "enchantment-preview.mixins.json"
+    ],
+    "depends": {
+      "fabricloader": ">=0.15.0",
+      "minecraft": ">=1.21 <=1.21.5",
+      "java": ">=21",
+      "fabric-api": "*"
+    },
+    "suggests": {
+      "another-mod": "*"
+    },
+    "custom": {
+      "modmenu": {
+        "badges": [ "client" ],
+        "parent": {
+          "id": "fabric-api",
+          "name": "Fabric API",
+          "badges": [ "library" ]
+        }
+      }
+    }
+  }

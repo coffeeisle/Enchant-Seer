@@ -1,0 +1,9 @@
+{
+    "enchantment-preview.tooltip.preview": "Enchantment Preview:",
+    "enchantment-preview.tooltip.cost": "Cost: %d Experience Levels",
+    "enchantment-preview.tooltip.requires": "Requires: %d Lapis Lazuli",
+    "enchantment-preview.tooltip.no_enchantments": "No enchantments available",
+    "enchantment-preview.tooltip.not_enchantable": "Item may not be enchantable at this level",
+    "enchantment-preview.tooltip.error": "Error: Cannot preview enchantments",
+    "enchantment-preview.tooltip.compatibility_error": "This may be due to mod compatibility issues"
+  }

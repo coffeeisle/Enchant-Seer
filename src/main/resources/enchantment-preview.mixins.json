@@ -1,0 +1,12 @@
+{
+    "required": true,
+    "package": "com.enchantmentpreview.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "refmap": "enchantment-preview.refmap.json",
+    "mixins": [
+    ],
+    "client": [
+      "EnchantmentScreenMixin"
+    ],
+    "minVersion": "0.8"
+  }
