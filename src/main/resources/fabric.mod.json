@@ -3,15 +3,16 @@
     "id": "enchantment-preview",
     "version": "1.0.0",
     "name": "Enchantment Preview",
-    "description": "Shows all enchantments in enchantment table tooltips so you know exactly what you'll get!",
+    "description": "Shows all enchantments in enchantment table tooltips so you know exactly what you'll get before spending XP and lapis!",
     "authors": [
-      "YourName"
+      "4ngel2769"
     ],
     "contact": {
-      "homepage": "https://github.com/yourusername/enchantment-preview",
-      "sources": "https://github.com/yourusername/enchantment-preview"
+      "homepage": "https://github.com/coffeeisle/Enchant-Seer",
+      "sources": "https://github.com/coffeeisle/Enchant-Seer",
+      "issues": "https://github.com/coffeeisle/Enchant-Seer/issues"
     },
-    "license": "MIT",
+    "license": "MIT",  
     "icon": "assets/enchantment-preview/icon.png",
     "environment": "client",
     "entrypoints": {
@@ -24,20 +25,18 @@
     ],
     "depends": {
       "fabricloader": ">=0.15.0",
-      "minecraft": ">=1.21 <=1.21.5",
+      "minecraft": ">=1.21.0 <=1.21.5", 
       "java": ">=21",
       "fabric-api": "*"
     },
     "suggests": {
-      "another-mod": "*"
+      "modmenu": "*"
     },
     "custom": {
       "modmenu": {
         "badges": [ "client" ],
-        "parent": {
-          "id": "fabric-api",
-          "name": "Fabric API",
-          "badges": [ "library" ]
+        "links": {
+          "modmenu.discord": "https://discord.gg/"
         }
       }
     }

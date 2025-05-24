@@ -1,4 +1,4 @@
-package main.java.com.enchantmentpreview.mixin;
+package com.enchantmentpreview.mixin;
 
 import net.minecraft.client.gui.screen.ingame.EnchantmentScreen;
 import net.minecraft.client.gui.DrawContext;
@@ -6,6 +6,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.EnchantmentScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -17,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Mixin(EnchantmentScreen.class)
 public class EnchantmentScreenMixin {
@@ -27,18 +27,19 @@ public class EnchantmentScreenMixin {
         EnchantmentScreen screen = (EnchantmentScreen) (Object) this;
         EnchantmentScreenHandler handler = screen.getScreenHandler();
         
-        // Check if hovering over enchantment buttons
+        // Check if hovering over any enchantment buttons
         for (int i = 0; i < 3; i++) {
             if (isHoveringOverEnchantmentButton(screen, mouseX, mouseY, i)) {
                 ItemStack itemToEnchant = handler.getSlot(0).getStack();
                 ItemStack lapisStack = handler.getSlot(1).getStack();
                 
+                // Check if we have a valid enchantment setup
                 if (!itemToEnchant.isEmpty() && 
                     handler.enchantmentPower[i] > 0 && 
                     lapisStack.getItem() == Items.LAPIS_LAZULI && 
                     lapisStack.getCount() >= handler.enchantmentId[i]) {
                     
-                    List<Text> tooltip = generateAccurateEnchantmentTooltip(
+                    List<Text> tooltip = generateEnchantmentTooltip(
                         itemToEnchant, 
                         handler.enchantmentId[i], 
                         handler.enchantmentPower[i], 
@@ -60,6 +61,7 @@ public class EnchantmentScreenMixin {
         int screenX = (screen.width - 176) / 2;
         int screenY = (screen.height - 166) / 2;
         
+        // Enchantment button positions in the GUI
         int buttonX = screenX + 60;
         int buttonY = screenY + 14 + buttonIndex * 19;
         int buttonWidth = 108;
@@ -69,51 +71,70 @@ public class EnchantmentScreenMixin {
                mouseY >= buttonY && mouseY < buttonY + buttonHeight;
     }
     
-    private List<Text> generateAccurateEnchantmentTooltip(ItemStack itemStack, int cost, int level, int seed, int option) {
+    private List<Text> generateEnchantmentTooltip(ItemStack itemStack, int cost, int level, int seed, int option) {
         List<Text> tooltip = new ArrayList<>();
         
         try {
-            // Create random with the same seed used by the enchantment table
+            // Create a copy of the item to test enchantments on
+            ItemStack testStack = itemStack.copy();
+            
+            // Use the enchantment table's seed combined with the option index
+            // This mimics how the vanilla enchantment table generates enchantments
             Random random = Random.create(seed + option);
             
-            // Create a temporary copy of the item
-            ItemStack tempStack = itemStack.copy();
-            
-            // Generate enchantments using the same method as the game
-            Map<Enchantment, Integer> enchantments = EnchantmentHelper.generateEnchantments(
-                random, tempStack, level, false
-            ).stream().collect(
-                java.util.stream.Collectors.toMap(
-                    entry -> entry.enchantment,
-                    entry -> entry.level
-                )
-            );
+            // Generate enchantments using vanilla logic
+            List<net.minecraft.enchantment.EnchantmentLevelEntry> enchantments = 
+                EnchantmentHelper.generateEnchantments(random, testStack, level, false);
             
             if (!enchantments.isEmpty()) {
-                tooltip.add(Text.literal("Enchantments Preview:").formatted(Formatting.GOLD, Formatting.UNDERLINE));
+                // Header
+                tooltip.add(Text.literal("Enchantment Preview").formatted(Formatting.GOLD, Formatting.UNDERLINE));
                 tooltip.add(Text.literal(""));
                 
-                for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                    Enchantment enchantment = entry.getKey();
-                    int enchLevel = entry.getValue();
+                // List each enchantment
+                for (net.minecraft.enchantment.EnchantmentLevelEntry entry : enchantments) {
+                    Enchantment enchantment = entry.enchantment;
+                    int enchLevel = entry.level;
                     
-                    Text enchantmentText = enchantment.getName(enchLevel);
+                    // Get the proper enchantment name with level
+                    Text enchantmentName = enchantment.getName(enchLevel);
                     tooltip.add(Text.literal("• ").formatted(Formatting.GRAY)
-                        .append(enchantmentText.copy().formatted(Formatting.AQUA)));
+                        .append(enchantmentName.copy().formatted(Formatting.AQUA)));
                 }
                 
+                // Cost information
                 tooltip.add(Text.literal(""));
                 tooltip.add(Text.literal("Cost: " + cost + " Experience Levels").formatted(Formatting.GREEN));
                 tooltip.add(Text.literal("Requires: " + cost + " Lapis Lazuli").formatted(Formatting.BLUE));
                 
+                // Add helpful hint
+                tooltip.add(Text.literal(""));
+                tooltip.add(Text.literal("Click to enchant!").formatted(Formatting.YELLOW, Formatting.ITALIC));
+                
             } else {
-                tooltip.add(Text.literal("No enchantments available").formatted(Formatting.DARK_GRAY));
-                tooltip.add(Text.literal("Item may not be enchantable at this level").formatted(Formatting.GRAY));
+                // No enchantments case
+                tooltip.add(Text.literal("No Enchantments Available").formatted(Formatting.DARK_GRAY, Formatting.UNDERLINE));
+                tooltip.add(Text.literal(""));
+                tooltip.add(Text.literal("This item cannot be enchanted").formatted(Formatting.GRAY));
+                tooltip.add(Text.literal("at this experience level.").formatted(Formatting.GRAY));
+                tooltip.add(Text.literal(""));
+                tooltip.add(Text.literal("Try using more bookshelves").formatted(Formatting.YELLOW));
+                tooltip.add(Text.literal("or a higher experience level.").formatted(Formatting.YELLOW));
             }
             
         } catch (Exception e) {
-            tooltip.add(Text.literal("Error: Cannot preview enchantments").formatted(Formatting.RED));
-            tooltip.add(Text.literal("This may be due to mod compatibility issues").formatted(Formatting.DARK_RED));
+            // Error handling
+            tooltip.add(Text.literal("Enchantment Preview Error").formatted(Formatting.RED, Formatting.UNDERLINE));
+            tooltip.add(Text.literal(""));
+            tooltip.add(Text.literal("Cannot preview enchantments").formatted(Formatting.DARK_RED));
+            tooltip.add(Text.literal("for this item.").formatted(Formatting.DARK_RED));
+            tooltip.add(Text.literal(""));
+            tooltip.add(Text.literal("This may be due to:").formatted(Formatting.GRAY));
+            tooltip.add(Text.literal("• Mod compatibility issues").formatted(Formatting.DARK_GRAY));
+            tooltip.add(Text.literal("• Invalid item type").formatted(Formatting.DARK_GRAY));
+            
+            // Log the error for debugging
+            com.enchantmentpreview.EnchantmentPreviewMod.LOGGER.error("Error generating enchantment tooltip for item: " + itemStack.getItem().toString(), e);
         }
         
         return tooltip;
